@@ -1,3 +1,7 @@
+//import jcifs.smb.NtlmPasswordAuthentication;
+//import jcifs.smb.SmbFile;
+//import jcifs.smb.SmbFileOutputStream;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,6 +15,16 @@ import java.util.Scanner;
 
 public class Client {
     public static void main(String[] args) throws IOException, InterruptedException {
+
+        //Samba autenticaçao
+//        String userSmb = "rodger";
+//        String passSmb = "secret";
+//        NtlmPasswordAuthentication auth = new NtlmPasswordAuthentication("",userSmb, passSmb);
+//
+//        //Smb file
+//        String path = "smb://192.168.1.111/chat-sd/db.txt";
+//        SmbFile smbFile = new SmbFile(path,auth);
+//        SmbFileOutputStream messagesSmb = new SmbFileOutputStream(smbFile);
 
         // Limpar console do terminal
         new ProcessBuilder(
@@ -55,8 +69,12 @@ public class Client {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern( "MM-dd-yyyy");
             String formatDateTime = now.format(formatter);
 
-            //Escreve no arqivo
             String contentToAppend = "<" + username + " - " + formatDateTime + "> " + msg + "\r\n";
+
+            //Escrever no arquivo compartilhado no smb
+//            messagesSmb.write(contentToAppend.getBytes());
+
+            //Escreve no arqivo txt
             Files.write(
                     Paths.get("db.txt"),
                     contentToAppend.getBytes(),
