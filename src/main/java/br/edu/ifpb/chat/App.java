@@ -17,6 +17,10 @@ import java.io.*;
 public class App {
     private static String login = "";
 
+    // opçoes do chat
+    private final static String HELP = "/help";
+    private final static String EXIT = "/exit";
+
     private static void printMessages(PrintStream consoleOuput, ArrayList<Message> messages, boolean withMe) {
         for (Message m : messages) {
             if (!m.getId().equals(login) || withMe) {
@@ -62,7 +66,7 @@ public class App {
 
         int optionMenu = OPTION_LOGIN;
 
-        System.out.print("< < SD - Chat on SMB > >\nDigite seu login\nUsername: ");
+        System.out.print("SD - Chat on SMB\nDigite seu login\nUsername: ");
         Scanner scannerLogin = new Scanner(System.in);
         login = scannerLogin.nextLine();
         //
@@ -75,13 +79,13 @@ public class App {
 
             //TODO: como controlar para apresentar a última mensagem
             Scanner scannerMessage = new Scanner(System.in);
-            while (optionMenu != OPTION_EXIT) {
-                consoleOuput.println("\n--- Mensagens Anteriores ---");
 
-                //1- ler do arquivo //TODO: ler apenas o que precisa
+            //loop
+            while (optionMenu != OPTION_EXIT) {
+                //ler do arquivo //TODO: ler apenas o que precisa
                 ArrayList<Message> messages = commandFileController.readFile(file);
 
-                //2 - escreve no arquivo
+                //escreve no arquivo
                 printMessages(consoleOuput, messages, true);
 
                 //tarefa - a cada 10s cancela a escrita
@@ -93,18 +97,25 @@ public class App {
                 Timer timer = new Timer();
                 timer.schedule(task, 10 * 1000); // timeout de 10s
 
-                //3 - ler do console e enviar para o arquivo
-                consoleOuput.print("Eu: ");
+                //ler do console e enviar para o arquivo
+                consoleOuput.print("[" + username + "] ");
                 String messageText = scannerMessage.nextLine();//bloqueante
 
-                //4 - timeout de 10 para cancela o scanner
+                //timeout de 10s para cancela o scanner
                 timer.cancel();
 
-                //5 - construir a mensagem e escrever no arquivo
-                Message message = new Message(login, messageText, LocalDateTime.now());
-                commandFileController.writeFile(file, message);
-
-//                Thread.sleep(500); //aguarda 0.5s
+                //verificar comandos do chat
+                if (messageText.equals(HELP)) {
+                    System.out.println("Lista de comandos:\n/exit    : Sai do chat.\n");
+                    Thread.sleep(2000); //aguarda 2s
+                } else if (messageText.equals(EXIT)) {
+                    System.out.println("Saindo do chat....");
+                    System.exit(0);
+                }else {
+                    //construir a mensagem e escrever no arquivo
+                    Message message = new Message(login, messageText, LocalDateTime.now());
+                    commandFileController.writeFile(file, message);
+                }
 
                 //6 - Limpar console do terminal
                 clearConsole();
